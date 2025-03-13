@@ -3,7 +3,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function RadioGroupDemo() {
   return (
-    // <div className="flex mt-4">
     <RadioGroup defaultValue="comfortable" className="flex mt-4 gap-8">
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="1" id="1" />
@@ -14,6 +13,5 @@ export function RadioGroupDemo() {
         <Label htmlFor="0">Not Completed</Label>
       </div>
     </RadioGroup>
-    // </div>
   );
 }

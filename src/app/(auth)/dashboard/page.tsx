@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/axiosConfig";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AuthGuard } from "@/hooks/AuthGuard";
 
 interface Todo {
   id: number;
@@ -109,113 +110,65 @@ function DialogDemo() {
   };
 
   return (
-    <section className="flex flex-col gap-4 h-screen items-center justify-center">
-      <div className="text-center w-1/2 ">
-        <h1 className="text-3xl font-extrabold text-green-600">Welcome</h1>
-        <h1 className="text-xl font-bold mb-4">TODO List</h1>
-        {todos.length > 0 ? (
-          <ul className="flex flex-col gap-4">
-            {todos.map((todo) => (
-              <li
-                key={todo.id}
-                className=" w-full px-4 p-2 flex justify-between items-center border shadow-lg rounded-md"
-              >
-                <div className="text-left">
-                  <h3 className="font-bold">{todo.title}</h3>
-                  <p>{todo.description}</p>
-                </div>
-                <div className="flex gap-4">
-                  <Button
-                    size="sm"
-                    onClick={() => setEditingTodo(todo)}
-                    className="cursor-pointer"
-                  >
-                    ✏️ Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => deleteTodo(todo.id)}
-                    className="cursor-pointer"
-                  >
-                    🗑️ Delete
-                  </Button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <h5 className="text-xl font-semibold text-gray-500">
-            You don't have any todos yet. Create one now.
-          </h5>
-        )}
-      </div>
+    <AuthGuard>
+      <section className="flex flex-col gap-4 h-screen items-center py-16">
+        <div className="text-center w-1/2 ">
+          <h1 className="text-3xl font-extrabold text-green-600">
+            Welcome User
+          </h1>
+          <h1 className="text-xl font-bold mt-8">TODO List</h1>
+          {todos.length > 0 ? (
+            <ul className="flex flex-col gap-4">
+              {todos.map((todo) => (
+                <li
+                  key={todo.id}
+                  className=" w-full px-4 p-2 flex justify-between items-center border shadow-lg rounded-md"
+                >
+                  <div className="text-left">
+                    <h3 className="font-bold">{todo.title}</h3>
+                    <p>{todo.description}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Button
+                      size="sm"
+                      onClick={() => setEditingTodo(todo)}
+                      className="cursor-pointer flex items-center gap-2"
+                    >
+                      <span>✏️</span>
+                      <span>Edit</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteTodo(todo.id)}
+                      className="cursor-pointer flex items-center gap-2"
+                    >
+                      <span>🗑️</span>
+                      <span>Delete</span>
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <h5 className="text-xl font-semibold text-gray-500">
+              You don't have any todos yet. Create one now.
+            </h5>
+          )}
+        </div>
 
-      {/* Add Todo Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" className="cursor-pointer">
-            Add Todo
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>New Todo</DialogTitle>
-            <DialogDescription>
-              Add a new todo. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input
-                id="title"
-                placeholder="e.g Standup meeting"
-                value={addTodoData.title}
-                onChange={handleChange}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
-              <Input
-                id="description"
-                placeholder="e.g Discuss updates on assigned tasks"
-                value={addTodoData.description}
-                onChange={handleChange}
-                className="col-span-3"
-              />
-            </div>
-            <RadioGroupDemo />
-          </div>
-          <DialogFooter>
-            <Button
-              type="submit"
-              //   disabled={isAddTodoDisabled}
-              className="cursor-pointer"
-              onClick={addTodo}
-            >
+        {/* Add Todo Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="cursor-pointer">
               Add Todo
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Todo Dialog */}
-      {editingTodo && (
-        <Dialog
-          open={Boolean(editingTodo)}
-          onOpenChange={() => setEditingTodo(null)}
-        >
+          </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Edit Todo</DialogTitle>
+              <DialogTitle>New Todo</DialogTitle>
               <DialogDescription>
-                Modify your todo and save changes.
+                Add a new todo. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -225,10 +178,9 @@ function DialogDemo() {
                 </Label>
                 <Input
                   id="title"
-                  value={editingTodo.title}
-                  onChange={(e) =>
-                    setEditingTodo({ ...editingTodo, title: e.target.value })
-                  }
+                  placeholder="e.g Standup meeting"
+                  value={addTodoData.title}
+                  onChange={handleChange}
                   className="col-span-3"
                 />
               </div>
@@ -238,30 +190,85 @@ function DialogDemo() {
                 </Label>
                 <Input
                   id="description"
-                  value={editingTodo.description}
-                  onChange={(e) =>
-                    setEditingTodo({
-                      ...editingTodo,
-                      description: e.target.value,
-                    })
-                  }
+                  placeholder="e.g Discuss updates on assigned tasks"
+                  value={addTodoData.description}
+                  onChange={handleChange}
                   className="col-span-3"
                 />
               </div>
+              <RadioGroupDemo />
             </div>
             <DialogFooter>
               <Button
                 type="submit"
+                //   disabled={isAddTodoDisabled}
                 className="cursor-pointer"
-                onClick={() => updateTodo(editingTodo.id)}
+                onClick={addTodo}
               >
-                Save Changes
+                Add Todo
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
-    </section>
+
+        {/* Edit Todo Dialog */}
+        {editingTodo && (
+          <Dialog
+            open={Boolean(editingTodo)}
+            onOpenChange={() => setEditingTodo(null)}
+          >
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edit Todo</DialogTitle>
+                <DialogDescription>
+                  Modify your todo and save changes.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="title" className="text-right">
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    value={editingTodo.title}
+                    onChange={(e) =>
+                      setEditingTodo({ ...editingTodo, title: e.target.value })
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Input
+                    id="description"
+                    value={editingTodo.description}
+                    onChange={(e) =>
+                      setEditingTodo({
+                        ...editingTodo,
+                        description: e.target.value,
+                      })
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  className="cursor-pointer"
+                  onClick={() => updateTodo(editingTodo.id)}
+                >
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </section>
+    </AuthGuard>
   );
 }
 
