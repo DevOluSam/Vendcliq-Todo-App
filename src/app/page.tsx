@@ -15,8 +15,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { api } from "@/lib/axiosConfig";
+import { useDispatch } from "react-redux";
+import { login } from "@/redux/authSlice";
 
 function TabsDemo() {
+  const dispatch = useDispatch();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({
     name: "",
@@ -42,13 +45,13 @@ function TabsDemo() {
         toast.error("Access denied. Try again");
         return;
       }
-      localStorage.setItem("authToken", token);
+      dispatch(login(token));
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       toast.success("Login successful! Redirecting...");
 
       // Redirect after a short delay
       setTimeout(() => {
-        router.push("/register");
+        router.push("/dashboard");
       }, 1500);
     } catch (error) {
       toast.error("Login failed. Try again.");
