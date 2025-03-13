@@ -16,6 +16,7 @@ import { api } from "@/lib/axiosConfig";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthGuard } from "@/hooks/AuthGuard";
+import { store } from "@/redux/store";
 
 interface Todo {
   id: number;
@@ -38,6 +39,9 @@ function DialogDemo() {
   useEffect(() => {
     const getTodos = async () => {
       try {
+        const token = store.getState().auth.token; // Get token from Redux Persist
+        console.log("Token before request:", token);
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         const res = await api.get("/todo");
         console.log(res.data);
         setTodos(res.data.data);

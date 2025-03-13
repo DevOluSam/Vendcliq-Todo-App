@@ -45,8 +45,13 @@ function TabsDemo() {
         toast.error("Access denied. Try again");
         return;
       }
+      console.log(token);
       dispatch(login(token));
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      console.log(
+        "Authorization Header:",
+        api.defaults.headers.common["Authorization"]
+      );
       toast.success("Login successful! Redirecting...");
 
       // Redirect after a short delay
@@ -77,7 +82,7 @@ function TabsDemo() {
 
       // Wait for toast before navigating
       setTimeout(() => {
-        router.push("/register"); // Redirect after showing the success toast
+        router.push("/dashboard"); // Redirect after showing the success toast
       }, 1500);
     } catch (error) {
       console.error("Signup error:", error);
